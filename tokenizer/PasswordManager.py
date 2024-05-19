@@ -19,10 +19,13 @@ class PasswordManager:
     def handle_login(self, username, password):
         if username not in self.users:
             print("Użytkownik o podanej nazwie nie istnieje.")
-            return
+            return False
         user = self.users[username]
         if user.verify_password(password):
             print("Zalogowano pomyślnie.")
+            # Generowanie tokenu sesji po udanym logowaniu
+            session_token = self.generate_session_token(username)
+            print(f"Token sesji: {session_token}")
             return True
         else:
             print("Błędne hasło.")
@@ -42,11 +45,9 @@ class PasswordManager:
 
     def generate_session_token(self, username):
         token = str(uuid4())
-        self.sessions[token] = username
+        self.sessions[username] = token
         return token
 
     def get_session_token(self, username):
-        for token, user in self.sessions.items():
-            if user == username:
-                return token
-        return None
+        return self.sessions.get(username)
+
